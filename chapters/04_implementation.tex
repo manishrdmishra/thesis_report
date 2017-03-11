@@ -1,0 +1,179 @@
+% !TeX root = ../main.tex
+	% Add the above to each chapter to make compiling the PDF easier in some editors.
+	
+	\chapter{Implementation}\label{chapter:04_implementation}
+	
+	\section{Data Preparation}
+Images are manually annotated using Fiji tool. A macro is created for Fiji to facilitate manual annotation of images. We used four classes Healthy, Tumor, Non-Mitochondria and Background to label each pixel of image. Manual segmentation using Fiji generates Roi files for each image. Then using these Roi files and raw image, label image is generated using a java-util tool. Label image can be defined as $ I_{label}(x,y) \in {0,1,2,3}, x \in [1,width], y \in [1,height]$. Where 0,1,2 and 3 corresponds to background, healthy, tumor and non-mitochondria class respectively.
+\begin{figure}[h!]
+\begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/56-12_20000_2.png}
+        
+        \caption{Healthy raw Mitochondria}
+    \end{subfigure}
+\begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/healthy_label.png}
+      \caption{Manually Segmented Healthy  Mitochondria}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+      \includegraphics[width=1\linewidth]{./figures/56-12_20000_2_label.png}
+       \caption{Healthy label Mitochondria}
+    \end{subfigure}
+ \end{figure}
+\begin{center}
+\tiny{ Ref this Schindelin J. ,Arganda-Carreras, I. ,Frise, E. \\
+	Fiji an open-source platform for biological-image analysis 
+}
+\end{center}
+
+\begin{figure}[h!]
+    \begin{subfigure}{.3\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/371-12b_20000_22.png}
+        \caption{Tumor raw image}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+  \begin{subfigure}{.3\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/tumor_label.png}
+        \caption{Manually segmented Tumor  image}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/371-12b_20000_22_label.png}
+        \caption{Tumor label image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+\end{figure}
+
+
+
+\section{Network training}
+To train the ClassUSK and SegUSK caffe neural tool\cite{Tschopp:Caffe-Neural-Tool} is used as front end tool. It internally calls Caffe to train the network. The advantage of using Caffe neural tool is that it provide on the fly preprocessing capabilities like data augmentation and label consolidation.
+
+In the preprocessing step data is augmented and normalized.
+Caffe neural tool extracts patches of size $808 \times 808$. To augment the dataset, training patches are rotated to a random multiple of $90^{\deg}$  along with
+random mirroring. Further training patches are blurred with a Gaussian kernel of size
+5. The blurring has a zero mean and 0.1 variance. Finally patches are normalized to
+$ [-1.0, 1.0] $ in floating point before feeding the neural network. 
+The network is trained  using caffe library \cite{jia2014caffe}. 
+
+
+\vspace{4em}
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+	    text width=10em, text centered, rounded corners, minimum height=4em]
+	\tikzstyle{line} = [draw, -latex']
+	\begin{figure}[h!]
+\centering
+	\begin{tikzpicture}[node distance = 4cm, auto]
+	
+	\node[inner sep=0pt,node distance=3cm] (raw) at (0,0)
+	    {\includegraphics[width=.25\textwidth]{./figures/189-12b_20000_13.png}};
+	\node[inner sep=0pt,below of=raw,node distance=4cm] (label) 
+	       {\includegraphics[width=.25\textwidth]{./figures/189-12b_20000_13_label.png}};
+	\node [block] (usk) at (5.5,-2) {Train ClassUSK-net};
+	\node[inner sep=0pt](background) at ( 11,2)  
+	  {\includegraphics[width=.25\textwidth]{./figures/predicted_map/results-1/189-12b_20000_13.png}};
+	\node[inner sep=0pt](healthy) at ( 11,-2) 
+	    {\includegraphics[width=.25\textwidth]{./figures/predicted_map/results-2/189-12b_20000_13.png}};
+	\node[inner sep=0pt](tumor) at ( 11,-6)  
+	   {\includegraphics[width=.25\textwidth]{./figures/predicted_map/results-3/189-12b_20000_13.png}};
+	
+	\node [block,below of=usk] (model)  {ClassUSK model};
+	  \path [line] (raw) -- (usk);
+	  \path [line] (label) -- (usk);
+	  \path [line] (usk) -- (model);
+	  \path [line] (usk) -- (background);
+	  \path [line] (usk) -- (healthy);
+	  \path [line] (usk) -- (tumor);
+	%\draw[<->,thick] (russell.south east) -- (whitehead.north west)
+	%    node[midway,fill=white] {Principia Mathematica};
+	
+	\end{tikzpicture}
+	\caption{Training ClassUSK-net}
+\end{figure}
+
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance = 4cm, auto]
+	\node[inner sep=0pt,node distance=3cm] (raw) at (0,0)
+	   {\includegraphics[width=.25\textwidth]{./figures/189-12b_20000_13.png}};
+	\node[inner sep=0pt,below of=raw,node distance=4cm] (label) 
+	  {\includegraphics[width=.25\textwidth]{./figures/189-12b_20000_13_label.png}};
+	\node [block] (usk) at (5.5,-2) {Train SegUSK-net};
+	
+	\node[inner sep=0pt](segmentation) at ( 11,-2) 
+	{\includegraphics[width=.25\textwidth]{./figures/189_12_20000_13_predicted_segusk.png}};
+	  
+	
+	
+	\node [block,below of=usk] (model)  {SegUSK model};
+	  \path [line] (raw) -- (usk);
+	  \path [line] (label) -- (usk);
+	  \path [line] (usk) -- (model);
+	
+	  \path [line] (usk) -- (segmentation);
+	  
+	%\draw[<->,thick] (russell.south east) -- (whitehead.north west)
+	%    node[midway,fill=white] {Principia Mathematica};
+	
+\end{tikzpicture}
+	\caption{Training SegUSK-net}
+\end{figure}
+\vspace{3em}
+To train ClassUSK, we merged background class and non-mitochondria class as background. To train SegUSK, we merge both ground-truth healthy and cancerous mitochondria
+as foreground label, whereas the non-mitochondrial structures (image background \&
+impurities) remained as background label. The training images are the same for both ClassUSK and SegUSK. The entire training process takes around 6 hours for each network using
+three GPUs and the testing time is 0.02 second per image.
+\section{Postprocessing}
+\subsection{Mitochondrion extraction}
+\begin{lstlisting}
+
+function [labelMatrix , numOfObjects] = extractMitochondrion(image)
+% input image is foreground background probability map
+% which is the output of SegUSK.
+% Binarize the image
+BW = imbinarize(image);
+
+% Fill the holes to complete the broken mitochondria
+BW2 = bwmorph(BW,'fill',20);
+BW2 = bwmorph(BW2,'clean',5);
+
+BW2 = bwmorph(BW2,'shrink',1);
+BW2  = bwmorph(BW2,'thicken',1);
+
+[labelMatrix , numOfObjects ] = bwlabel(BW2);
+end
+\end{lstlisting}
+
+\subsection{Single mitochondrion tumor score calculation}
+\begin{lstlisting}
+function [score] = calculateMitochondriaScore(roi, backgroundProbability, healthyProbability, tumorProbability)
+%CALCULATE MITOCHONDRIA SCORE 
+
+totalScore = 0;
+backgroundScore = 0;
+healthyScore = 0;
+tumorScore = 0;
+
+% iterate over all the pixels in a ROI 
+for i = 1:size(roi.x , 1)
+    backgroundScore =   backgroundScore +    backgroundProbability(roi.y(i),roi.x(i));
+     healthyScore =  healthyScore + healthyProbability(roi.y(i), roi.x(i));
+     tumorScore =  tumorScore + tumorProbability(roi.y(i), roi.x(i));
+   
+    % store score of single mitochondria 
+if( backgroundScore<max(healthyScore,tumorScore))
+    %score = backgroundScore/size(roi.x,1);
+    score =  totalScore/size(roi.x,1);
+else
+   score = 0;
+ end
+end
+end
+\end{lstlisting}

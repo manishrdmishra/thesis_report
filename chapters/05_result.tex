@@ -1,0 +1,242 @@
+	% !TeX root = ../main.tex
+	% Add the above to each chapter to make compiling the PDF easier in some editors.
+\chapter{Result}\label{chapter:result}
+
+
+%\section{Results and Discussion}
+\section{Evaluation of ClassUSK, SegUSK and CombUSK}
+We evaluate ClassUSK, SegUSK and our combination framework (termed
+CombUSK here) on our reserved test dataset (30 images, 15 healthy tissue, 15 tumour). We first consider the classification accuracy on pixel level. As shown in Fig.
+3a, both ClassUSK and CombUSK gain a high pixel classification accuracy of
+$87.8 \pm l4.2 \%$ (mean and s.d.) and $88.1 \pm 4.2 \%$ respectively. By contrast, the performance of
+SegUSK (mitochondria vs non-mitochondrial structures) is poorer($80.3 \pm 5.7 \%$, as it
+tends to predict impurities in the background into the foreground, i.e. mitochondrial
+class. The evaluation criteria for object segmentation is based on counting the number
+of correctly segmented mitochondria (Dice coefficient > 80 \%), divided by the
+average of total number of ground-truth mitochondria and that of automatic
+segmented mitochondria (similar to the definition of the Dice coefficient, but number
+based rather than pixel based). For ClassUSK, mitochondrial segmentation is
+generated through labeling the connected components of the inversed label map of
+the predicted non-mitochondrial class. This approach performs poorly when
+mitochondria are nearby and touching, since ClassUSK tends to merge them into a
+single mitochondrion (shown in the exemplary segmentation of Fig. 3b, red arrows).
+In comparison, although SegUSK performs better in separating nearby mitochondria
+and generating more clear boundaries, it cannot differentiate impurities from real
+mitochondria probably since both have similar shape features. The best performance
+an astonishing accuracy of $98.2 \pm 2.8 \%$ (around half a mitochondrion error per image),
+is achieved with CombUSK, as it effectively overcomes the disadvantages of both
+networks
+
+\section{Heterogeneity quantification of mitochondrial structures}
+Our score allows us to assign single mitochondria to healthy and cancerous states, but
+also to states in between the two extremes. In Fig. 4a, we show exemplary images of
+mitochondria for different ranges of our score. The structural differences suggest that
+the transition from healthy to cancerous mitochondria is not an instant switching, but
+rather a continuous process. This is quantified by our structural score: the intensely
+stained mitochondrial matrix tends to connect the outer-membrane on both sides in
+mitochondria with a low score. These connections begin to break up when the score
+increases and the matrix shrinks into isolated dots in mitochondria with a high score.
+Distributions of scores for different samples exhibit the clear differences between
+healthy and cancerous cells: the majority of healthy mitochondria have a score under
+0.2 (Fig. 4b), while most of cancerous mitochondria have a score above 0.8. An
+exception is the HepT1 tumour cell line, which shows an increased heterogeneity in
+structural scores as compared to other tumour cell lines. This is an inspiring finding
+as HepT1 is known to be resistant to chemotherapy. The varying mitochondrial
+structural patterns identified by our structural score might reflect the resistance
+against single chemotherapeutics.
+
+\begin{figure}[ht!]
+\includegraphics[scale=.7]{./figures/figure_3.png}
+\caption{CombUSK gives rise to highly accurate mitochondria segmentation. (a) Evaluation of ClassUSK, SegUSK and CombUSK on 30 test images. (b) Exemplary mitochondrial segmentation (ground-truth: white outlines, red: ClassUSK, green: SegUSK, blue: CombUSK, note that Cytan outlines are due to an overlay effect of SegUSK and CombUSK). Red arrow indicates a merged segmentation of three closely-attached mitochondria by ClassUSK. Green arrow indicates an miss-segmentation of impurities as mitochondria by SegUSK.}
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[scale=0.7]{./figures/figure_4.png}
+\caption{Our score visualizes the transition between healthy and cancerous mitochondria. (a) A score from 0 to 1 represents the structural transition from healthy to cancerous mitochondria, with six exemplary mitochondria shown on the top.}
+\end{figure}
+\section{Single mitochondrion score visualization}
+
+
+\begin{figure}[htb]
+    \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/Fao_seg_color_826-14_200000_11.png}
+        \caption{Fao test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/Fao_mitochondrion_score_826-14_200000_11.png}
+        \caption{Fao predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    
+    
+     \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/H4IIE_seg_color_330-12_20000_7.png}
+        \caption{H4IIE test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/H4IIE_mitochondrion_score_330-12_20000_7.png}
+        \caption{H4IIE predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    
+    
+     \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/HepG2_seg_color_230-12_20000_7.png}
+        \caption{HepG2 test image}
+      \label{fig:hepg2_test}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/HepG2_mitochondrion_score_230-12_20000_7.png}
+        \caption{HepG2 predicted segmentation}
+       \end{subfigure}
+    \end{figure}
+\begin{figure}[htb!]
+\ContinuedFloat
+
+\begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/HepT1_seg_color_98-13_20000_2.png}
+        \caption{HepT1 test image}
+      
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/HepT1_mitochondrion_score_98-13_20000_2.png}
+        \caption{HepT1 predicted segmentation}
+ \end{subfigure}
+
+     \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_379-12b_20000_2_seg_color.png}
+        \caption{Healthy test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_379-12b_20000_2_projecte_score.png}
+        \caption{Healthy predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    
+         \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/McA7777_seg_color_377-12b_20000_3.png}
+        \caption{Healthy test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/McA7777_mitochondrion_score_377-12b_20000_2.png}
+        \caption{Healthy predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}[htb!]
+\ContinuedFloat
+
+\begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_seg_color_825-14_200000_13.png}
+        \caption{Mhic1 test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_mitochondrion_score_825-14_200000_13.png}
+        \caption{Mhic1 predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}    
+
+  \caption{Projected scores of individual mitochondrion using ClassUSK and SegUSK}
+    \label{fig:mitochondrion_score} 
+\end{figure}
+
+\section{Biological replicates wise analysis}
+Each cell line have one or more biological replicates. Table \ref{table:replicates} show the list of biological replicates corresponding to cell lines. We wanted to do Anova1 analysis for each cell line. The purpose of one-way ANOVA is to determine whether data from several groups (levels) of a factor have a common mean. That is, one-way ANOVA enables you to find out whether different groups of an independent variable have different effects on the response variable y.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+\hline
+Tumor subtype  & Biological replicates \\
+\hline
+\multirow{3}{4em}{H4IIE} & 330 - 12  \\ 
+&L6512 \\ 
+& L13412\\ 
+& L18912 \& 189-12b \\
+\hline
+\multirow{3}{4em}{Healthy} & L5612 \& 56-12  \\ 
+&331 - 14 \\ 
+& 606 - 14\\ 
+\hline
+\multirow{3}{4em}{McA7777} & T14912 \\
+& T15412 \\
+& T37113 \\
+& T37713 \\
+\hline
+\end{tabular}
+\end{center}
+\label{table:replicates}
+\caption{Biological replicates}
+\end{table}
+
+
+\begin{figure}[htb!]
+    \begin{subfigure}{1\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/biological_replicates/H4IIE_box_plot.png}
+        \caption{Box plot for H4IIE cell line}
+   \label{fig:fao_raw}
+    \end{subfigure}
+    \vspace{4em}
+  \begin{subfigure}{1\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/biological_replicates/H4IIE_means_comp.png}
+        \caption{Mean comparison for H4IIE cell line}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    
+    \end{figure}
+    \begin{figure}[htb!]
+\ContinuedFloat
+    \begin{subfigure}{1\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/biological_replicates/leber_box_plot.png}
+        \caption{Box plot for Healthy cell line}
+   \label{fig:fao_raw}
+    \end{subfigure}
+    \begin{subfigure}{1\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/biological_replicates/leber_means_comp.png}
+        \caption{Mean comparison for for Healthy cell line}
+   \label{fig:fao_raw}
+    \end{subfigure}
+    
+     \end{figure}
+    \begin{figure}[htb!]
+\ContinuedFloat
+
+ \begin{subfigure}{1\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/biological_replicates/tumor_box_plot.png}
+        \caption{Box plot for McA7777 cell line}
+   \label{fig:fao_raw}
+    \end{subfigure}
+    \begin{subfigure}{1\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/biological_replicates/tumor_means_comp.png}
+        \caption{Mean comparison for for McA7777 cell line}
+   \label{fig:fao_raw}
+    \end{subfigure}
+    \label{fig:replicate_box_plot}
+\caption{Box plot shows the average score of tumor for a biological replicate. The name of replicates are written in the form "x--y", where x is the name of the replicate and y is the number of mitochondrion extracted after segmentation. \\
+Mean comparison plot shows how one replicate differs from other in their mean tumor score. X-axis of mean comparison plot show the mean tumor score and Y-axis represents the replicates. }
+\end{figure}

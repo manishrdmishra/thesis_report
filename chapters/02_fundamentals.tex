@@ -1,0 +1,319 @@
+% !TeX root = ../main.tex
+	% Add the above to each chapter to make compiling the PDF easier in some editors.
+	
+	\chapter{Fundamentals }\label{chapter:02_fundamentals}
+	% http://ufldl.stanford.edu/tutorial/supervised/ConvolutionalNeuralNetwork/
+	
+
+	\section{Historical context of deep learning }
+%https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/DeepLearning-NowPublishing-Vol7-SIG-039.pdf	
+	Until recently, most machine learning techniques leveraged shallow structured architectures. Generally these architectures contain at most one or two layers of nonlinear feature transformations \cite{Deng:2014:DLM:2692917.2692918}. Some examples of the shallow architectures are support vector machines(SVMs), Gaussian mixture models (GMMs), conditional random fields (CRFs), multilayer perceptrons (MLPs). 
+	Shallow architectures have been effective in solving numerous simple problems. But their limitations to modeling and representational power causes hindrance when dealing with more complicated real-world applications such as natural images , visual scenes, human speech and natural sound. 
+	\\
+ Deep learning owes its inception to artificial neural network research. Feed-forward neural networks or Multi layer perceptrons (MLPs) with many hidden layers, are often referred as deep neural networks (DNNs). Back propagation (BP), is a well known algorithm for learning the parameters of these networks. BP alone does not work well for learning networks with more than a small number of hidden layers. 
+	BP is based on local gradient information, and usually starts at some random initial points. Generally it gets trapped in local optima when the batch mode or even stochastic gradient descent algorithm is used. The severity of the problem increases significantly as the depth of the network increases. This difficulty was partially responsible for taking away most of the machine learning research from neural networks to shallow models that have convex loss functions, for which the global optimum can be efficiently obtained at the cost of reduced modeling  power. \\
+	 The optimization difficulty associated with the deep models was empirically alleviated when a reasonably efficient, unsupervised learning algorithm which was introduced in the two seminar papers \cite{Hinton06afast}, \cite{HintonSalakhutdinov2006b}. 
+	 For the highly non-convex optimization problem of DNN learning,
+it is obvious that better parameter initialization techniques will
+lead to better models since optimization starts from these initial models.
+What was not obvious, however, is how to efficiently and effectively
+initialize DNN parameters and how the use of large amounts of
+training data can alleviate the learning problem until more recently
+\cite{Bengio07greedylayer-wise}, \cite{Bengio:2009:LDA:1658423.1658424}, \cite{DBLP:conf/interspeech/DengSYAMH10}, \cite{Dahl12context-dependentpre-trained}, \cite{Hinton06afast}, \cite{HintonSalakhutdinov2006b}. The DNN parameter
+initialization technique that attracted the most attention is the unsupervised
+pretraining technique proposed in \cite{Hinton06afast}, \cite{HintonSalakhutdinov2006b} discussed earlier.
+
+% http://cs231n.github.io/convolutional-networks/
+	% ref:2 - http://ufldl.stanford.edu/tutorial/supervised/ConvolutionalNeuralNetwork/
+\section{Convolutional neural networks}
+Convolutional Neural Networks (CNNs) \cite{Karpathy:introduction:CNN} are similar to neural networks, made up of neurons with learnable weights and biases. A CNN is comprised of one or more convolutional layers often with a subsampling step and then followed by one or more fully connected layers as in multilayer neural network. Its architecture is designed to take advantage of the two dimensional structure of an input image or speech signal. 
+This is achieved with local connections and tied weights followed by some form of pooling, due to this the learned features are translation invariant. Another benefit of CNNs is that they are easier to train and have fewer parameters than fully connected networks with the same number of hidden units. 
+% ref - 2
+%\subsection{Architecture overview}
+%The layers of a CNN have neurons arranged in 3 dimensions : width, height and depth ( The depth here refers to the third dimension of an activation volume, not the depth of a full network ). For example, the input images in CIFAR-10 are an input volume of actvations, and the volume has dimensions $32 \times 32 \times 3 $ ( width , height and depth respectively). 
+%The final output layer would for CIFAR-1 have dimensions $ 1 \times 1 \times 10 $ , because by the end of the CNN architecture we will reduce the full image into a single vector of class scores, arranged along the depth dimension. 
+\begin{figure}[th!]
+\begin{tabular}{c|c}
+
+
+ \begin{subfigure}{0.5\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/neural_net2.png}
+        
+            \end{subfigure}
+&            
+            \begin{subfigure}{0.5\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/cnn_arch.png}
+        
+            \end{subfigure}
+ \end{tabular}
+            \caption{Left: A regular 3-layer Neural Network. Right: A ConvNet arranges its neurons in three dimensions (width, height, depth), as visualized in one of the layers. Every layer of a ConvNet transforms the 3D input volume to a 3D output volume of neuron activations. In this example, the red input layer holds the image, so its width and height would be the dimensions of the image, and the depth would be 3 (Red, Green, Blue channels). \\ source : \cite{Karpathy:introduction:CNN}}
+\end{figure}
+\section{Layers in CNN/ConvNets} 
+A CNN is a sequence of layers, and every layer of a CNN transforms one volume of activations to another volume through a differentialbe function. Mainly three types of layers are used to build ConvNets: Convolutional layer, Pooling layer and Fully Connected layer. We stack these layers to form a full ConvNet. 
+\subsection{Convolutional layer} 
+The Convolutional layer is the core building block of a ConvNet. ConvNet layer's parameters consist of a set of learnable filters/kernels. Every filter is small spatially (along width and height) but extends through the full depth of the input volume. For example, a typical filter on a first layer of a ConvNet might have size $5 \times 5 \times 3$ (5 pixels width and 5 pixels height and of depth 3). During the forward pass, we convolve each filter across the width and height of the input volume and compute dot products between the entries of the filter and the input at any position. By sliding the filter over the width and height of the input volume we produce a 2 dimensional activation map that gives the responses of that filter at every spatial position. The network learn filters that activate when they see some visual feature such as an edge at some orientation or some color on the first layer, or eventually entire face or wheel-like patterns on higher layers of the network. 
+\subsubsection{Local connectivity}
+When dealing with high-dimensional input data such as images, it is impractical to connect neurons to all neurons in the  previous layer.
+Instead, we will connect each neuron to only a local region of the input layer. The spatial extent of this connectivity is a hyperparameter called receptive field of neuron. The extent of the connectivity along the depth axis is always equal to the depth of the input volume.  
+   
+\subsubsection{Spatial arrangement} Three parameters which control the size of the output volume are depth, stride and zero-padding. 
+\begin{itemize}
+\item The depth of the output volume is a hyperparameter, it corresponds to the number of filters we would like to use, each learning to look for something different in the input. For example, if the first Con vulutional layer takes as input the raw image, then different neurons along the depth dimension may activate in presence of various oriented edged, or blobs of color.
+\item The stride is a hyperparameter with which we slide the filter. When the stride is $1$ then we move the filters one p pixel at a time. When the stride is $2$ ( or uncommonly $2$ or more, though this is rare in practice
+) then the filters jump $2$ pixels at a time as we slide them around. This will produce smaller volume output spatially. 
+\item Sometimes it is convenient to pad the input volume with zeros around the border. The size of this zero-padding is a hyperparameter. The nice feature of padding is that it will allow us to control the spatial size of the out put volumes ( most commonly to preserve the spatial size of the input volume so that the input and output width and height are the same).
+\end{itemize}
+
+We can compute the spatial size of the output volume as a function of the input volume size (W), the receptive field size of the Conv layer neurons (F) , the stride with which they are applied (S), and the amount of zero padding used (P) on the border. its given by (W - F + 2P)/ S + 1.
+
+\subsubsection{Parameter sharing }
+% http://deeplearning.net/tutorial/lenet.html,http://cs231n.github.io/convolutional-networks/
+Parameter sharing scheme is used in Convolutional layers to control the number of parameters and we can significantly reduce the number of parameter using this approach. The main assumption behind parameter sharing is that if one feature is useful to compute at some spatial position then it should also be useful to compute at a different position. 
+\subsection{Pooling layer}
+% http://cs231n.github.io/convolutional-networks/
+In designing ConvNet it is common to periodically insert a pooling layer in between successive convolution layers. 
+Its function is to reduce the spatial size of the representation to reduce the amount of parameters and computation in the network and hence to control overfitting.
+
+\begin{figure}[th!]
+\begin{tabular}{c|c}
+
+\begin{subfigure}{0.5\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/pool.png}
+        
+            \end{subfigure}
+            &
+            \begin{subfigure}{0.5\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/maxpool.png}
+        
+            \end{subfigure}
+            \end{tabular}
+            \caption{Pooling layer downsamples the volume spatially, independently in each depth slice of the input volume. Left: In this example, the input volume of size $[224 \times 224 \times 64]$ is pooled with filter size 2, stride 2 into output volume of size $[112 \times 112 \times 64]$. Notice that the volume depth is preserved. Right: The most common downsampling operation is max, giving rise to max pooling, here shown with a stride of 2. That is, each max is taken over 4 numbers (little $2x2$ square). \\ source : \cite{Karpathy:introduction:CNN}}
+            
+\end{figure}
+The most common used form of pooling layer is with filters of size $ 2 \times 2 $ applied with a stride of 2, which downsamples every depth slice in the input by 2 along both width and height. There are several types of pooling are available like max pooling, average pooling and L2 norm pooling. In practice max pooling is used quite often.
+\subsection{Normalization layer}
+Several kinds of normalization layers have been proposed for use in ConvNet architectures. Although, these days its not used in practice a as their contribution is shown to be minimal. 
+\subsection{Fully connected layer}
+Neurons in a fully connected layer have full connections to all activations in the previous layer, as in regular neural networks. Their activations can hence be computed with a matrix multiplication followed by a bias offset.   
+ \section{Pixel wise classification}
+
+Pixelwise classification is the process of labeling each pixel in an image based on a local context around the pixel. Figure\ref{fig:pixel_classification} shows how this works with sliding window networks that outputs a single pixel per input tile.
+Minibatch processing can output many pixels at once, this is still inefficient. \\
+
+The terminologies used are defined as follows. 
+\begin{itemize}
+\item v: Size of the total network input padding (context)
+\item p: Network layer padding
+\item s: Network layer stride 
+\item k: Network layer kernel size 
+\item d: Network layer kernel stride
+\item n: Network minibatch size
+\end{itemize}
+
+The work by \cite{DBLP:journals/corr/LiZW14} allows to make existing SW networks more efficient while giving identical prediction results. Alternatively, fully convolutional models (U and partially also USK) directly output a bigger patch, as depicted in Figure \ref{fig:pixel_classification_sk_net}. This method of training and processing is called patch-based $(n = 1, w > 1)$, as opposed to minibatch-based $(n > 1, w = 1)$. A combination of both $(n > 1, w > 1)$ is possible.
+Minibatches can still have advantages during training because every element in the minibatch can be picked independently. During processing, networks that output large patches always performs better.
+
+
+
+
+\begin{figure}[th!]
+\begin{subfigure}{0.45\textwidth}
+         \centering
+         \includegraphics[width=1\linewidth]{./figures/pixel_classification_1.png}
+        \caption{Input image to classify with border mirroring to extend the image. The green rectangle is a 4 by 1 pixel area to be labeled.}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/pixel_classification_2.png}
+        \caption{Generated minibatch input of size n = 4 and with a context of 102 by 102 pixels. The output classification for this input will be 4 by 1 pixels. The individual images in the minibatch are only shifted by one pixel each. The data overlaps and is copied into the network redundantly.
+(a)}
+     \end{subfigure} 
+  
+    \caption{Pixelwise image classification based on sliding window architectures. (Raw image source: ssTEM \cite{gerhard2013segmented}, \cite{Tschopp:caffe-neural-model}). The surrounding context (blue rectangles) is what determines the labeling decision of the neural network.}
+    \label{fig:pixel_classification}
+ \end{figure}  
+
+\begin{figure}[th!]
+ \begin{subfigure}{0.45\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/pixel_classification_sk_1.png}
+        \caption{The green area to be labeled is $128 \times 128$ pixels $(w = 128)$. The green patch with the blue context padding $(v = 101)$ is directly what the networks take as input.}
+            \end{subfigure}
+             \begin{subfigure}{0.45\textwidth}
+         \centering   
+        \includegraphics[width=0.7\linewidth]{./figures/pixel_classification_sk_2.png}
+        \caption{The data is passed through the network as large a tile of size w+v by w+v instead of a minibatch. There is no overlapping data being passed through the network
+redundantly and no duplicated convolution and pooling operations are carried out. The output prediction is a large patch (w = 128) instead of a stride of pixels from a minibatch (as in Figure 1.1).}
+            \end{subfigure}
+            \caption{Pixelwise image classification based on strided kernel and fully convolutional architectures. (Raw image source: ssTEM\cite{gerhard2013segmented}, \cite{Tschopp:caffe-neural-model}).}
+            \label{fig:pixel_classification_sk_net}
+    \end{figure}
+
+
+
+
+\subsection{Sliding window (SW-Net)}
+
+Sliding window networks classify an image by taking a pixel and a border of some size around it as input and classify the center pixel by running the patch through a neural network. Then the next pixel is labeled by shifting the window patch by one pixel, classifying the neighboring pixel of the first one. The pixels can also be processed in a minibatch to increase GPU utilization and amortize direct memory access transfer times. This technique is very inefficient as most of the context of two neighboring pixels overlaps and the same filters are applied over the whole context. The redundant computations can be reduced for a patch of input pixels by using SK networks.
+
+\begin{table}
+\begin{center}
+  \begin{tabular}{ | c | c | c | c | c | c | c | }
+    \hline
+    Layer  &  Type  & w & $f_{in}$ & $f_{out}$ & k & s \\ \hline
+   data & MemoryData & 100 & 3 & 3 & 1 & 1 \\ \hline 
+   conv1 + relu1 & Convolution + ReLU & 94 & 3 & 48 & 7 & 1 \\ \hline
+   pool1 & Max Pooling & 47 & 48 & 48 & 2 & 2 \\ \hline
+   conv2 + relu2 & Convolution + ReLU & 43 & 48 & 128 & 5 & 1 \\ \hline
+   pool2 & Max Pooling & 22 & 128 & 128 & 2 & 2 \\ \hline
+   conv3 + relu3 & Convolution + ReLU & 20 & 128 & 192 & 3 & 1 \\ \hline
+   pool3 & Max Pooling & 10 & 192 & 192 & 2 & 2 \\ \hline
+   ip1 + relu4 & InnerProduct + ReLU & 1 & 192 & 1024 & 10 & 1 \\ \hline
+   ip2 + relu5 & InnerProduct + ReLU & 1 & 1024 & 512 & 1 & 1 \\ \hline
+   ip3  & InnerProduct & 1 & 512 & 2 & 1 & 1 \\ \hline
+   prob & Softmax & 1 & 2 & 2 & 1 &1 \\ 
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{Network definition for SW-net}
+  \label{table:def-sw-net}
+  \end{table}
+
+The sliding window network described here was developed by Julien Martel \cite{Martel}. It is used as the baseline for calculating the speedups obtained with the SK, U and USK networks \cite{DBLP:journals/corr/Tschopp15}. The structure of the SW network was also used when designing the SK network and core of the USK network.
+\subsection{Strided kernel network (SK-Net)}
+
+An algorithm to convert a sliding window network to a strided kernel network is provided in \cite{DBLP:journals/corr/LiZW14}. However, it was incomplete on many things like consistency checking, kernel sizes and feature map output sizes. Also, the theory of converting inner product (fully connected) layers is not described. This algorithm was modified in \cite{DBLP:journals/corr/Tschopp15} with a more complete version. The algorithm is able to convert networks and find consistency issues fully automatized. 
+
+\begin{table}
+\begin{center}
+  \begin{tabular}{ | c | c | c | c | c | c | c | }
+    \hline
+    Layer  &  Type  & w & $f_{in}$ & $f_{out}$ & k & s \\ \hline
+   data & MemoryData & 102 & 3 & 3 & 1 & 1 \\ \hline 
+   conv1 + relu1 & Convolution + ReLU & 96 & 3 & 48 & 7 & 1 \\ \hline
+   pool1 & Max Pooling & 47 & 48 & 48 & 2 & 2 \\ \hline
+   conv2 + relu2 & Convolution + ReLU & 44 & 48 & 128 & 5 & 1 \\ \hline
+   pool2 & Max Pooling & 22 & 128 & 128 & 2 & 2 \\ \hline
+   conv3 + relu3 & Convolution + ReLU & 20 & 128 & 192 & 3 & 1 \\ \hline
+   pool3 & Max Pooling & 10 & 192 & 192 & 2 & 2 \\ \hline
+   ip1 + relu4 & InnerProduct + ReLU & 1 & 192 & 1024 & 10 & 1 \\ \hline
+   ip2 + relu5 & InnerProduct + ReLU & 1 & 1024 & 512 & 1 & 1 \\ \hline
+   ip3  & InnerProduct & 1 & 512 & 2 & 1 & 1 \\ \hline
+   prob & Softmax & 1 & 2 & 2 & 1 &1 \\ 
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{Network definition for corrected SW-net \\ source:\cite{DBLP:journals/corr/Tschopp15}}
+  \label{table:def-sw2-net}
+  \end{table}
+
+
+
+\begin{table}
+\begin{center}
+  \begin{tabular}{ | c | c | c | c | c | c | c | c | }
+    \hline
+    Layer  &  Type  & w & $f_{in}$ & $f_{out}$ & k & s & d  \\ 
+    \hline
+   data & MemoryData & 229 & 3 & 3 & 1 & 1 & 1 \\ 
+   \hline 
+   conv1 + relu1 & Convolution SK  + ReLU & 223 & 3 & 48 & 7 & 1  & 1 \\  
+    \hline
+   pool1 & Max Pooling & 222 & 48 & 48 & 2 & 1 & 1 \\ 
+   \hline
+   conv2 + relu2 & Convolution SK + ReLU & 214 & 48 & 128 & 5 & 1 & 2 \\
+   \hline
+   pool2 & Max Pooling & 212 & 128 & 128 & 2 & 1 & 2 \\ 
+   \hline
+   conv3 + relu3 & Convolution SK + ReLU & 204 & 128 & 192 & 3 & 1 & 4 \\
+    \hline
+   pool3 & Max Pooling SK & 200 & 192 & 192 & 2 & 1 & 4 \\ 
+   \hline
+   ip1 + relu4 & Convolution SK  + ReLU & 128 & 192 & 1024 & 10 & 1 & 8 \\
+    \hline
+   ip2 + relu5 & Convolution SK  + ReLU & 128 & 1024 & 512 & 1 & 1 & \\
+    \hline
+   ip3  & Convolution SK  & 128 & 512 & 2 & 1 & 1 & 1 \\ 
+   \hline
+   prob & Softmax & 128 & 2 & 2 & 1 & 1 & 1 \\ 
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{Network definition for SK-net \\ source:\cite{DBLP:journals/corr/Tschopp15}}
+  \label{table:def-sk-net}
+  \end{table}
+
+
+\begin{figure}[ht!]
+
+         \centering
+ 
+        \includegraphics[width=1\linewidth]{./figures/sk_kernel.png}
+        \caption{(a) $3 \times 3$ convolution kernel $W_k$ whose entries are generally non-zeros (represented by colored squares). (b) $2 \times 2$ pooling kernel $P_k$ whose entries act as binary masks to extract features
+only at masked locations (represented by shaded squares). (c) Convert the convolution kernel Wk in (a) to a 2-regularly sparse convolution kernel Wk,2. Colored squares represent entries from kernel $W_k$, and white squares represent 0. (d) Convert the pooling kernel $P_k$ in (c) to a 3-regularly sparse pooling kernel Pk,3. Shaded (white) squares represent masked (unmasked) locations.}
+\end{figure}
+
+ \begin{figure}[ht!]
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/sk_operations.png}
+         \caption{Illustration of forward propagation using a CNN with 3 convolution and 2 pooling layers. source: \cite{DBLP:journals/corr/LiZW14}}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\ContinuedFloat
+
+ \begin{subfigure}{1\textwidth}
+         \centering   
+        \includegraphics[width=1\linewidth]{./figures/sk_net.png}
+        \caption{SK network configuration visualization. Green-red striped blocks
+represent feature maps with a kernel stride $(d > 1)$. Vertical numbers represent the size of the feature maps while the horizontal numbers represent the number of feature maps. source:\cite{DBLP:journals/corr/Tschopp15}}
+            \end{subfigure}
+    \end{figure}
+There are  $ |W| 	\approx 20.5 \times 10^6 $  free parameters \cite{DBLP:journals/corr/Tschopp15} in SK-Net, of which most $ (\approx 19.6 \times 10^6)$ are within the ip1 layer 
+
+\subsection{U-Net} 
+\begin{figure}[th!]
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/u-net-architecture.png}
+        \caption{U-net architecture (example for 32x32 pixels in the lowest resolution). Each blue box corresponds to a multi-channel feature map. The number of channels is denoted on top of the box. The x-y-size is provided at the lower left edge of the box. White boxes represent copied feature maps. The arrows denote the different operations. source:\cite{DBLP:conf/miccai/RonnebergerFB15}}
+        \label{fig:u-net_arch}
+    \end{figure}
+
+The U-Net was presented in the \cite{DBLP:conf/miccai/RonnebergerFB15} paper. Table \ref{table:def-sk-net} describes the network layer by layer and it is shown in the figure \ref{fig:u-net_arch}. The U-Net has contracting and expanding sections:\\
+• Contracting: Two convolutions followed by one max pooling layer. \\
+• Expanding: Deconvolution followed by a convolution to reduce the number of feature maps, a mergecrop and two convoluton layers.
+
+
+   
+The U-Net has $ |W| \approx 29 \times 10^6 $  parameters \cite{DBLP:journals/corr/Tschopp15}. Thus there are about $30\%$ more parameters than in SK-Net. 
+The number of weights rises towards the middle of the U-Net, due to having the same convolution kernel size $(3 \times 3)$ throughout the network and more feature maps with every contracting step.
+For weight initialization, the U-Net uses random initialization drawn from a
+Gaussian distribution with $ \mu = 0 $ and $ \sigma = \sqrt{2 \/( f_{in} \times k^2)}$.
+
+\subsection{USK-Net}
+
+The USK network combines ideas from the U and SK networks, proposed in \cite{DBLP:journals/corr/Tschopp15}, shown in figure\ref{fig:usk-net_arch}. The majority of the convolutions and therefore free parameters can be trained on downsampled feature maps by using one or more contracting path steps (and their expanding counterpart) from the U-Net.
+After one contracting step, the same sequence of layers as in the SK network is applied, however with different kernel sizes to match the sizes of the inputs and outputs as required by the U subnetwork.
+
+The USK-Net has $ |W| \approx 5.5 \times 10^6$ parameters. This is a fraction (about $25\%$) of the SK-Net and U-Net weights. 
+The savings in free parameters mainly come from reducing the ip1 layer, which
+now only has $\approx 4.2 \times 10^6$ weights. While the ip1 layer is still the most expensive one, the network is more balanced than SK-Net. The inner product layers are less important, because the U subnetwork merges and convolves the feature maps from the beginning of the network together with upsampled signals from the ip2 layer. 
+
+\begin{figure}[ht!]
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/usk_net.png}
+        
+        \caption{USK network configuration visualization. Green-red striped blocks
+represent feature maps with a kernel stride $(d > 1)$. The U subnetwork blocks are just displayed red because the kernel stride does not apply there. Vertical numbers represent the size of the feature maps while the horizontal numbers represent the number of feature maps. source:\cite{DBLP:journals/corr/Tschopp15}}
+\label{fig:usk-net_arch}
+    \end{figure}
+   
+    
+
+
+	

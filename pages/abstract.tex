@@ -1,0 +1,24 @@
+\chapter{\abstractname}
+	
+	%TODO: Abstract
+	
+Mitochondria are the main source of cellular energy and thus
+essential for cell survival. Pathological conditions like cancer, can cause
+functional alterations and lead to mitochondrial dysfunction. Indeed,
+electron micrographs of mitochondria that are isolated from cancer cells
+show a different morphology as compared to mitochondria from healthy
+cells. However, the description of mitochondrial morphology and the classification of the respective samples are so far qualitative. 
+Furthermore, large intra-class variability and impurities such as mitochondrial fragments and other organelles in the micrographs make a clear separation
+between healthy and cancerous samples challenging. In this study, we
+propose a deep-learning based model to quantitatively assess the status
+of each intact mitochondrion with a continuous score, which measures
+its closeness to the healthy/tumor classes based on its morphology. 
+This allows us to describe the structural transition from healthy to cancerous mitochondria. 
+Methodologically, we train two USK networks, one to
+segment individual mitochondria from an electron micrograph, and the
+other to softly classify each image pixel as belonging to (i) healthy mitochondrial, (ii) cancerous mitochondrial and (iii) non-mitochondrial (image background \& impurities) tissue. Our combined model outperforms
+each network alone in both pixel classification and object segmentation.
+Moreover, our model can quantitatively assess the mitochondrial heterogeneity within and between healthy samples and different tumor types,
+hence providing insightful information of mitochondrial alterations in
+cancer development.
+

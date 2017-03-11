@@ -1,0 +1,222 @@
+	% !TeX root = ../main.tex
+	% Add the above to each chapter to make compiling the PDF easier in some editors.
+	
+	\chapter{Introduction}\label{chapter:introduction}
+	\section{Mitochondria}
+	Mitochondria are essential for multiple critical functions in healthy cells \cite{Alirol2006}. 
+They generate up to $90\%$ of the cellular ATP, essential for several anabolic and catabolic processes, serve as a calcium reservoir and are involved in the regulation of apoptosis. In cancerous cells, these functions are either impaired or altered to meet the specific demands of cellular maintenance and reproduction of cancer \cite{Wallace2012}. Often,  mitochondrial oxidative phosphorylation is affected and  ATP production is reduced to 50 $\%$ \cite{Warburg309}, mitochondrial regulation of cell death breaks up, and cancerous mitochondria are involved in reprogramming adjacent stromal cells to optimize the cancer cell environment \cite{Wallace2012}. Furthermore, different cancer cell types undergo different bioenergetic alterations, some to more glycolytic and others to more oxidative states, leading to a highly complex pattern of mitochondrial alteration in cancer. 
+
+Mitochondrial dysfunctions in cancer is mirrored by a pronounced change in the morphology of these organelles. Distinct morphological features can be found in mitochondria that are isolated from cancer cell lines as compared to healthy liver tissue (as shown in Fig.\ref{fig:mitochondria}). Moreover, considerable structural variability is found between different cell lines, which might be potentially related to specific mitochondrial functional differences \cite{Smith2012}. 
+So far, descriptions of mitochondrial structure peculiarities remain largely qualitative and subject to individual expert interpretation, which limits a systematic examination of potential structural-functional correlation. A quantitative and objective structure-based assessment of mitochondria is thus required  for a better understanding of mitochondrial dysfunctions in different cancerous environments and for the development of mitochondria targeting therapies.\\
+\section{Dataset}
+\label{sec:dataset}
+Our dataset comprises 163 images of representative healthy mitochondria and 240
+images of representative cancer mitochondria (100 McA7777, 66 H4IIE, 56 MH1C1,
+9 Fao, 8 HepG2 and 11 HepT1). Each image has a size of 1032x1376 pixel (20000x magnification). 
+We manually annotate 60 healthy images and 60 tumour images
+(randomly sampled from different tumour cell lines) using Fiji \cite{schindelin2012opensource}. Among these annotated images,
+we use 45 healthy and 45 tumour images to train our networks and reserve the
+remaining 15 healthy and 15 tumour images to test networks.\\
+ \newpage
+	 \section{Representative images of mitochondria}		
+		
+	\begin{figure}[th!]
+		  
+		 \centering
+		        \begin{minipage}[b]{0.48\textwidth}
+		                \includegraphics[width=\textwidth]{./figures/train_healthy}%
+		                \caption{Liver healthy - 1}
+		                         \label{fig:healthy_liver_1}
+		   %\end{subfigure}
+		    \end{minipage}
+		\hfill    
+		    \begin{minipage}[b]{0.48\textwidth}
+		                \includegraphics[width=\textwidth]{./figures/train_healthy_2}%
+		                \caption{Liver healthy - 2}
+		                         \label{fig:healthy_liver_2}
+		   %\end{subfigure}
+		    \end{minipage}
+		    
+		\hfill
+		\begin{minipage}[b]{0.48\textwidth}
+		    %\begin{subfigure}[b]{.40\textwidth}
+		        \centering
+		                        \includegraphics[width=\textwidth]{figures/train_cancer.png}%
+		
+		                        \caption{McA7777 tumor}
+		                                         \label{fig:train_cancer}
+		    %\end{subfigure}
+		      \end{minipage}
+		\hfill 
+		\begin{minipage}[b]{0.48\textwidth}
+		   % \begin{subfigure}{.4\textwidth}
+		       % \centering
+		                \includegraphics[width=\textwidth]{figures/H4IIE.png}%
+		                \caption{H4IIE tumor}
+		                \label{fig:h4iie_cancer}
+		    %\end{subfigure}
+		    \end{minipage}
+		\hfill
+		\begin{minipage}[b]{0.48\textwidth}
+		    %\begin{subfigure}{.4\textwidth}
+		       % \centering
+		                \includegraphics[width=\textwidth]{figures/mhic1.png}%
+		
+		                 \caption{MHIC1 tumor}
+		                         \label{fig:mhic1_cancer}
+		   % \end{subfigure}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[b]{0.48\textwidth}
+		                \includegraphics[width=\textwidth]{figures/Fao.png}%
+		                 \caption{Fao tumor}
+		                         \label{fig:fao_cancer}
+		   %\end{subfigure}
+		   \end{minipage}
+		
+		
+		\end{figure}
+		\newpage
+		\hfill
+		\begin{figure}[tbp!]
+			\begin{minipage}[b]{0.48\textwidth}      
+		                \includegraphics[width=\textwidth]{figures/HepG2.png}%
+		               
+		               
+		                 \caption{HepG2 tumor}
+		                  \label{fig:hepg2_cancer}
+		   \end{minipage}
+		   \hfill
+		   \begin{minipage}[b]{0.48\textwidth}    
+		 		  
+		                \includegraphics[width=\textwidth]{figures/HepT1.png}%
+		
+		                 \caption{HepT1 tumor}
+		                         \label{fig:hept1_cancer}
+		\end{minipage}
+		
+		    \caption{Electron micrographs of mitochondria of healthy liver tissue and liver tumor of different subtypes. Large intra-class variance is found for both healthy and tumor mitochondria.}
+		    \label{fig:mitochondria}
+		\end{figure}
+		\section{Goal}
+		The main goal of the presented study is to build a computer-based model to quantify the structural transition from healthy to tumorous mitochondria. To achieve this goal, we formulate the problem as a supervised learning problem, in which a model is trained to classify healthy mitochondria vs tumorous mitochondria. Particularly, our tumor class consists of four subtypes: McA7777, H4IIE, MH1C1, Fao (different cell lines of rat hepatocellular carcinoma). This learning problem is inherently
+		challenging due to large intra-class variance in both healthy (Fig. \ref{fig:healthy_liver_1}) and tumor mitochondria (Fig. \ref{fig:train_cancer}-\ref{fig:fao_cancer}). The model should be subsequently validated using unseen images of the same tissue type. Finally, we also assess the capability of the model to predict the structural association of two unseen types of tumorous tissue, HepG2 (Fig. \ref{fig:hepg2_cancer}) and HepT1 (Fig. \ref{fig:hept1_cancer}). This
+		is useful in clinical application as it is difficult to cover the heterogeneity of all types of tumorous tissue in the training images yet it would be important for our model to capture the invariant features which are shared across different tumor subtypes. In the prediction phase, we use a soft classification to incorporate classification uncertainty and to infer the heterogeneity of tumorous tissue.   
+		
+		
+\section{Previous work}
+%		In our previous study \cite{DBLP:conf/isbi/MishraSWSMNZP16}, we proposed a learning-based approach to quantitatively assess tumorous mitochondria structure using convolutional neural network (CNN).
+%In this study we used the same dataset as described in section\ref{sec:dataset}. Training set consists of randomly sampled 45 images from healthy liver images and 45 tumor images, 
+%5 images from Fao and the other 40 images are sampled from McA777, H4IIE, MH1C1 tumors. The remaining images are kept for testing. To train a CNN from scratch we need lot of data, for this smaller patches are extracted from one full image.
+%Specifically from each mitochondria image, we extract patches of size $ 400 \times 400 $ as shown in figure \ref{fig:isbi:patch_extraction}. To augment the training
+%data set further we perform rotation of four times in the step size of
+%$ 90^{o} $ , which is followed by horizontal and vertical flips. In this
+%way we create a balanced training dataset of 21,600 patches. 
+%
+%In order to accelerate the training procedure and to
+%reduce dimensionality of the problem, patches have been further resized to $ 200 \times 200$, before feeding to network.	
+%
+%
+%		\begin{figure}[h!]
+%		    %\begin{subfigure}[b]{0.4\textwidth}
+%		        \centering
+%		       
+%		                \includegraphics[width=\textwidth]{./figures/isbi_mit_patch}%
+%		                \caption{Patch Extraction}
+%		                         \label{fig:isbi:patch_extraction}
+%		   \end{figure}
+%		  
+%
+%		\begin{figure}[h!]  
+%		 \centering 
+%		  
+%		                \includegraphics[width=\textwidth]{./figures/isbi_patch_scores}%
+%		                \caption{Patch wise score}
+%		                         \label{fig:isbi:patch_wise_score}
+%		   %\end{subfigure}
+%		 
+%		    
+%	
+%		\end{figure}
+%			
+%		This method produces a score between 0 and 1, 
+%		for each patch extracted from a given mitochondria image as show in \ref{fig:isbi:patch_wise_score}, where score 0 and 1 corresponds to pure healthy and pure tumor respectively. 
+%		Using these patch scores, the image score and heterogeneity index was calculated for a given mitochondria image.
+% We convert the raw scores into a normalized confidence score ($cs$) to measure the confidence to classify a patch as tumor, which is defined as:
+%\begin{equation}
+%\label{eq:cs_patch}
+%    cs_{patch} = \frac {e^{s_2 - s_1}}{ e^{s_1 - s_2} + e^{s_2 - s_1} } 
+%\end{equation}
+%in which $s_1$ and $s_2$ is the score given by the model for healthy and tumor class respectively. 
+%For a given mitochondria image, we measure its confidence score by taking patch wise mean, as:
+% \begin{equation}
+% \label{eq:cs_image}
+%    cs_{image} = \frac{1}{N} \sum_{i = 1}^N cs_{patch_i},
+%\end{equation}
+%in which $N=20$, the number of patches generated from the given image. A threshold of $0.5$ is used to classify the image into either healthy or tumor class. Besides confidence score, we also used a heterogeneity index ($hi$) to describe the structural variation of mitochondria within one image by measuring the standard deviation of $cs_patch$ of an image, defined as:
+%\begin{equation}
+%\label{eq:hi_image}
+%    hi_{image} = \sqrt { \frac{1}{N} \sum_{i = 1}^N (cs_{patch_i} - cs_{image})^2}.
+%\end{equation}
+%
+%	Using above formulae we calculated the tumor score and heterogeneity index for the whole image.  
+%	
+%		\begin{figure}[h!]
+%		    %\begin{subfigure}[b]{0.4\textwidth}
+%		        \centering
+%		      
+%		                \includegraphics[width=\textwidth]{./figures/cs_image_graph}%
+%		                \caption{Image level score }
+%		                         \label{fig:isbi:image_score_graph}\end{figure}
+%		  
+%		
+%		\begin{figure}[th!]
+%		 \centering  
+%		   
+%		                \includegraphics[width=1\textwidth]{./figures/hi_graph}%
+%		                \caption{Image level heterogeneity index}
+%		                         \label{fig:isbi:hi_score_graph}
+%		   %\end{subfigure}
+%		   
+%		    
+%	
+%		\end{figure} 
+%		
+%		\begin{figure}[h!]
+%		  
+%		        \centering
+%		      
+%		                \includegraphics[width=1\textwidth]{./figures/hi_isbi_idp_prb}%
+%		                \caption{Score alteration by contaminated mitochondria}
+%		                         \label{fig:isbi:hi_score_contamination}
+%	
+%				\end{figure}    
+%		
+%		
+%		Although this method worked quite well and is able to classify mitochondria images with high accuracy. But the score of heterogeneity index can be contaminated by impurities 
+%		and dead mitochondria present in the image as shown in figure   
+%		  \ref{fig:isbi:hi_score_contamination}. Moreover we assumed that there will be at least one mitochondria present in a patch, which may not be the case for each patch.
+
+A pioneer study in this direction was presented in \cite{DBLP:conf/isbi/MishraSWSMNZP16}, which trained a convolutional neural network (CNN) to classify each image patch of the micrographs
+into healthy or tumour classes. 
+Though it achieves relatively high classification accuracy, this patch-based approach cannot filter out the confounding effects
+of non-mitochondrial structures in the images and its performance drops dramatically when applied to images with large proportions of impurities. Since high quality images with minimal amount of impurities are experimentally extremely challenging, and for some cell types nearly impossible, the application of \cite{DBLP:conf/isbi/MishraSWSMNZP16} method is limited. Therefore, in the present study, we develop a joint
+segmentation-classification model to derive a continuous score for each intact
+tumour mitochondrion. With this mitochondrion-specific score, we can quantify
+mitochondrial heterogeneity within and between healthy tissue and different tumour subtypes, and describe the structural transition from healthy to tumorous
+tissue.
+		\section{Objective}
+		To resolve the problems of previous work, we propose a joint segmentation and classification approach, where we will first segment the mitochondria and then classify them. In this way we can eliminate the dead mitochondria and impurities.  This will make the quantitative analysis more precise
+		The objective is precisely stated as below. 
+	\begin{itemize}
+	\item 	Segment the Mitochondria images in two classes 
+	\begin{itemize}
+		\item mitochondria 
+		\item Background and impurities
+	\end{itemize} 
+	
+	 \item Classify each segmented mitochondrion as either healthy or tumor.
+	 \item Assign a score to each segmented mitochondrion. 
+	 
+	 \end{itemize}
+		

@@ -1,0 +1,73 @@
+\RequirePackage[l2tabu,orthodox]{nag}
+
+% TODO: decide if one-sided/two-sided
+%\documentclass[headsepline,footsepline,footinclude=false,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,BCOR=12mm,DIV=12]{scrbook} % two-sided
+\documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc]{scrbook} % one-sided
+
+% TODO: change citation style in settings
+\input{settings}
+
+% TODO: change thesis information
+\newcommand*{\getUniversity}{Technische Universität München}
+\newcommand*{\getFaculty}{Department of Informatics}
+\newcommand*{\getTitle}{Classification of Mitochondrion using USK-Net}
+\newcommand*{\getTitleGer}{
+Klassifizierung von Mitochondrion mit USK-Net}
+\newcommand*{\getAuthor}{Manish Kumar Mishra}
+\newcommand*{\getDoctype}{Master's Thesis in Informatics}
+\newcommand*{\getSupervisor}{Prof. Dr. Nassir Navab}
+\newcommand*{\getAdvisor}{Dr. Tingying Peng}
+\newcommand*{\getSubmissionDate}{13/03/2017}
+\newcommand*{\getSubmissionLocation}{Munich}
+
+
+\begin{document}
+
+% Set page numbering to avoid "destination with the same identifier has been already used" warning for cover page.
+% (see https://en.wikibooks.org/wiki/LaTeX/Hyperlinks#Problems_with_Links_and_Pages).
+\pagenumbering{alph}
+\input{pages/cover}
+
+\frontmatter{}
+
+\input{pages/title}
+\input{pages/disclaimer}
+
+
+\input{pages/acknowledgements}
+\input{pages/abstract}
+\microtypesetup{protrusion=false}
+\tableofcontents{}
+\microtypesetup{protrusion=true}
+
+\mainmatter{}
+
+\input{chapters/01_introduction}
+% explain about the cnn and its common architecture
+\input{chapters/02_fundamentals}
+\input{chapters/03_method}
+\input{chapters/04_implementation}
+\input{chapters/05_result}
+\input{chapters/06_conclusion}
+% explain about the semantic segmentation and 
+% methods available for semantic segmentaion like sliding window, SK-net, U-net and USK-net.
+%\input{chaptes/03_semantic_segmentation}
+% Explain the libraries used for implementing the cnn , caffe , caffe neural tool 
+%\input{chapters/04_libraries}
+% explain how the data is prepared for the training, how training is done , how much time it took, machine description,  the description of network, etc. 
+%\input{chapters/05_training}
+% describe the result and provide the interpretation of the results. 
+%\input{chapters/06_results}
+
+% TODO: add more chapters here
+
+\appendix{}
+
+\microtypesetup{protrusion=false}
+\listoffigures{}
+\listoftables{}
+\microtypesetup{protrusion=true}
+\printbibliography{}
+%\bibliographystyle{splncs}
+%\bibliography{bibliography}
+\end{document}

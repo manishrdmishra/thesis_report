@@ -1,0 +1,308 @@
+	% !TeX root = ../main.tex
+	% Add the above to each chapter to make compiling the PDF easier in some editors.
+\chapter{Method}\label{chapter:method}
+
+
+\label{sec:method}
+We employ a joint segmentation-classification framework to derive structural score
+for each mitochondrion (Fig. 2). For each electron micrograph, a pixel classification
+module generates three probability maps for the healthy mitochondrial, cancerous
+mitochondrial, and non-mitochondrial classes (Fig. 2d). In parallel, an object
+segmentation module identifies each mitochondrion as a region of interest (Fig. 2e).
+Both networks use theU-shape sparse kernel structure [ref], and are termed ClassUSK
+and SegUSK, respectively, and differ in output layer and the loss function (Fig. 2b
+and c). The outputs of both networks are overlaid on the original image: the
+transparent green, red and blue represents pixel-level probability of healthy
+mitochondrial, cancerous mitochondrial and non-mitochondrial classes, whilst the white outlines are segmented object contours (Fig. 2f). The quantification of individual mitochondrial structure combines the results of the two networks, with details given
+in the Subsection 2.3.
+The USK-net is a combination of the U-shape subnetwork (U-net) \cite{DBLP:conf/miccai/RonnebergerFB15} and sparse
+kernel subnetwork (SK-net) \cite{DBLP:journals/corr/LiZW14}. Like U-net, the USK-net has a contracting path and
+an expanding path, yet with only one downsampling/upsampling step in both paths
+ as shown in fig\ref{fig:usk-net_arch}, three steps less than the original U-net structure. The bottom of the network
+The bottom of the network is organized as the SK-net, where the sparse kernel technique is used 
+to eliminate
+almost all of the redundant computation among connected patches and to accelerate
+the network training and testing \cite{DBLP:journals/corr/LiZW14}. Compare to U-net and SK-net architectures of
+similar input and output size, USK-net has only 25$ \%$ of U-net and SK-net weights
+and hence is much easier to be trained, particularly with limited amount of data.
+\begin{figure}[ht!]
+\centering 
+\includegraphics[scale=0.7]{./figures/training_detail_fig_2.png}
+\caption{Schematic plot of our joint segmentation-classification framework to derive structural score for each intact mitochondrion. See text for explanation. }
+\label{fig:schematic_seg_classification}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\includegraphics[scale=0.5]{./figures/segUSK_arch.png}
+\caption{Architecture of classUSK and SegUSK }
+\label{fig:classUSK}
+\end{figure}
+
+
+\section{Pixel classification}
+We classify each pixel into three classes using ClassUSK:(i) healthy mitochondrial,
+(ii) cancerous mitochondrial and (iii) non-mitochondrial structures. We use a
+soft-max layer as our output layer so that we can obtain a continuous score that
+measures the probability of one pixel belong to each class, rather than a single label.
+In the original USK-net structure proposed in [ref], the context
+size is $180 \times 180$  pixels. First we trained our model using original USK-net and tested on test images. We can see that the segmentation obtained from this model in figure \ref{fig:context_180}
+
+
+\begin{figure}[th!]
+    \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/Fao_826-14_200000_11.png}
+        \caption{Fao test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/Fao_seg_826-14_200000_11.png}
+        \caption{Fao predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_379-12b_20000_2.png}
+        \caption{Healthy test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_seg_379-12b_20000_2.png}
+        \caption{Healthy predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_825-14_200000_13.png}
+        \caption{Mhic1 test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_seg_825-14_200000_13.png}
+        \caption{Mhic1 predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}    
+  
+  \caption{Segmentation visualization of predicted images by the model trained with the context of $180 \times 180 $,we can see that some mitochondria are touching each other and some are broken.}  
+  \label{fig:context_180}  
+\end{figure}
+
+
+One key factor of a successful classification is that the context size considered for
+around each pixel in its classification should be large enough to cover an entire
+mitochondrion, as it is difficult to differentiate a fraction of the inner structures of a
+intact mitochondrion from impurities that include a broken mitochondrial fragment
+(as shown in Fig. \ref{fig:all_mitochondria}).
+
+\begin{figure}[ht!]
+\centering
+        \includegraphics[width=1\linewidth]{./figures/all_mitochondria.png}
+        \caption{Electron micrographs of isolated mitochondria from healthy mouse liver tissue
+(green boxes) and different liver tumor cell lines (red boxes, bars equal 1 /mu m). Intra-
+class variation is found for both healthy and tumor samples: While some mitochondria
+from healthy liver cells resemble cancerous structures (indicated by the red arrow)
+there are also mitochondria in cancer samples that resemble the healthy morphology
+(indicated by the green arrow in H4IIE). Furthermore, the images are corrupted by
+impurities and fragments from mitochondria and other organelles (indicated by blue
+arrows).}
+        \label{fig:all_mitochondria}
+\end{figure}
+
+From this experiment we observed that context size of $180 \times 180 $ is not sufficient for our application, as some
+mitochondria in specific cancer cell lines (e.g. Fao) have a very large size. Hence, we use two downsampling and upsampling layers to increase the context size of our USK-net to $300 \times 300$ pixels (Figure \ref{fig:classUSK}). 
+
+\begin{figure}[th!]
+    \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/Fao_826-14_200000_11.png}
+        \caption{Fao test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/Fao_seg_large_context_size_826-14_200000_11.png}
+        \caption{Fao predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_379-12b_20000_2.png}
+        \caption{Healthy test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healhty_seg_large_context_size_379-12b_20000_2.png}
+        \caption{Healthy predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_825-14_200000_13.png}
+        \caption{Mhic1 test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_seg_large_context_size_825-14_200000_13.png}
+        \caption{Mhic1 predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}    
+  
+  \caption{Segmentation visualization of predicted images by the model trained with the context of $300 \times 300 $,we can see that segmentation results are better than with the context size of $ 180 \times 180 $.}  
+\end{figure}
+
+
+\section{Object segmentation}
+Since our aim is to derive one score per mitochondrion, we have to also segment
+individual mitochondria as objects of interest. A simple way to obtain segmentation is
+to invert the classification result of the non-mitochondrial structures (class iii) , which we were doing. This
+approach however is error-prone in practice, since e.g. as small amount of
+miss-classified pixels between two closely neighboring mitochondria could merge
+them as a single mitochondrion, and missclassified pixels inside one mitochondrion
+would break into two or more individual mitochondria (an evaluation is provided in
+the Results section). Since this kind of miss
+segmentation is usually difficult to be
+restored with post-processing techniques (such as morphological filtering), we train a
+separate network to achieve an end-to-end segmentation. \\
+The architecture of our SegUSK is very similar to ClassUSK, but with an affinity
+layer and a component layer after soft-max layer (Figure \ref{fig:classUSK}). The affinity layer explores
+neighboring pixels both in the horizontal and vertical directions and compute
+connectivity among pixels. The component layer is a small layer based on the
+OpenCV flood-filling algorithm and outputs separated connected components from a
+foreground-background labeled ground truth. The Malis (maximum affinity learning
+of image segmentation) loss function takes the output of the affinity and component
+layers and attributes the error map between the prediction and the ground truth for
+back propagation ( refer to \cite{DBLP:journals/corr/Tschopp15} and \cite{DBLP:journals/corr/abs-0911-5372} for details of Affinity layer, component layer
+and Malis loss calculation). 
+It should be also noted that we only use SegUSK to segment mito-
+chondria from background, regardless of its tissue type.
+
+In figure \ref{fig:seg_SegUSK} we can visualize the segmentation obtained by SegUSK network.
+\begin{figure}[ht!]
+    \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/Fao_826-14_200000_11.png}
+        \caption{Fao test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/Fao_seg_net2_826-14_200000_11.png}
+        \caption{Fao predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    
+    
+     \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/H4IIE_330-12_20000_7.png}
+        \caption{H4IIE test image}
+        \label{fig:fao_raw}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/H4IIE_seg_net2_330-12_20000_7.png}
+        \caption{H4IIE predicted segmentation}
+        \label{fig:healthy_raw}
+    \end{subfigure}
+    
+    
+     \begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/HepG2_230-12_20000_7.png}
+        \caption{HepG2 test image}
+      \label{fig:hepg2_test}
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/HepG2_seg_net2_230-12_20000_7.png}
+        \caption{HepG2 predicted segmentation}
+       \end{subfigure}
+    \end{figure}
+\begin{figure}[ht!]
+\ContinuedFloat
+
+\begin{subfigure}{.5\textwidth}
+         \centering
+        \includegraphics[width=1\linewidth]{./figures/HepT1_98-13_20000_3_HepT1.png}
+        \caption{HepT1 test image}
+      
+    \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+        \centering
+       \includegraphics[width=1\linewidth]{./figures/HepT1_seg_net2_98-13_20000_3.png}
+        \caption{HepT1 predicted segmentation}
+ \end{subfigure}
+
+     \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_379-12b_20000_2.png}
+        \caption{Healthy test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Healthy_seg_net2_379-12b_20000_2.png}
+        \caption{Healthy predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_825-14_200000_13.png}
+        \caption{Mhic1 test image}
+        \label{fig:healthy_label}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{./figures/Mhic1_seg_net2_827-14_20000_13.png}
+        \caption{Mhic1 predicted segmentation}
+        \label{fig:healthy_label}
+    \end{subfigure}    
+
+  \caption{Segmentation visualization of predicted images by the model trained with the SegUSK}
+    \label{fig:seg_SegUSK} 
+\end{figure}
+
+\section{Mitochondrion-specific Structural Score}
+With ClassUSK, we can calculate a normalized per-pixel score that measures the
+structural transition from healthy to cancerous class by:
+	 \begin{equation}
+        \label{eq:cs_pixel}
+            \Gamma_{pixel} = \frac {e^{s_2 - s_1}}{ e^{s_1 - s_2} + e^{s_2 - s_1} } 
+   \end{equation}
+where s1 and s2 are the probabilities to belong to the healthy mitochondria and 
+cancerous mitochondria class, respectively. A weighted average of the per-pixel
+scores within the segmented region of a single mitochondrion serves as a measure of
+healthy-cancerous transition for the mitochondrial structure, hence:
+
+   \begin{equation}
+          \label{eq:cs_mitochondria}
+              \Gamma_{mitochondria} =  \frac{\sum_{pixel \in mitochondrion} w_{pixel} \times \Gamma_{pixel}}{\sum_{pixel \in mitochondrion} w_{pixel}} , w_{pixel} = 1 - s_3
+     \end{equation}
+        \begin{equation}
+          \label{eq:cs_mitochondria_2}
+    \textrm {only if} \hspace{1em} \frac{1}{n_{pixel}} \sum \nolimits_{pixel \in mitochondrion} s_3 > 0.5
+     \end{equation}
+     
+where the individual mitochondria segmentation is provided by the prediction
+of SegUSK and $s_3$ is the probability belonging to non-mitochondrial class. We
+dd the condition Eq. \ref{eq:cs_mitochondria_2} here to filter out the mistakes made by SegUSK in
+segmenting impurities as mitochondria (Figure \ref{fig:schematic_seg_classification}).
+
+\section{Acquisition of mitochondrial images}
+Mitochondria from rat liver were isolated from cultured cells (McA7777, MH1C1,
+H4IIE, Fao, HepG2 and HepT1) according to \cite{Schulz2015} . Electron microscopy
+of the isolated mitochondria was done as described previously \cite{Schmitt2015}. Briefly, samples
+were fixed in 2.5 $\%$ glutaraldehyde, postfixation and prestaining was done with
+osmium tetroxide. After dehydration with ethanol and propylene oxide, samples were
+embedded in Epon. Ultrathin sections were stained with uranylacetate and lead citrate
+and examined with an EM 10 CR transmission electron microscope (Zeiss,
+Germany). \\
